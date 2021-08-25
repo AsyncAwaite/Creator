@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-size: 14px;
+      line-height: 16px;
+      padding: 0;
+
+      margin: 0;
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+      position: relative;
+      flex-direction: column;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .header,
+    main {
+      padding: 0 calc(20px + (80 - 20) * ((100vw - 375px) / (1920 - 375)));
+      display: flex;
+    }
+
+    .header__logo {
+      background-color: #fff;
+    }
+
+    .header__logo svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .header__content {
+      width: 100%;
+      display: flex;
+      border-radius: 15px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .in__input {
+      width: 100%;
+
+    }
+
+    .header__item {
+      padding: 15px;
+      position: relative;
+      width: 25%;
+      /* flex: 1 1 180px; */
+    }
+
+    .item_result {
+      width: 100%;
+    }
+
+    .item-pref::after,
+    .item-suf::after {
+      content: 'тільки латиницею';
+      position: absolute;
+      width: 100%;
+      left: 30%;
+      font-size: 10px;
+      color: rgba(99, 99, 99, 0.781);
+      bottom: 0;
+    }
+
+    .logo img {
+      max-width: 200px;
+    }
+
+    .item {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .item__name {
+      font-family: Arial, Helvetica, sans-serif;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #2F3B6D;
+    }
+
+    .item__visual {
+      min-height: 26px;
+
+
+      position: relative;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #2F3B6D;
+      padding: 5px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: bold;
+      background-color: rgba(139, 198, 62, 0.37);
+      text-align: center;
+      transition: all .4s linear;
+    }
+
+
+    .item__visual.active {
+      background-color: #8CC63E;
+
+    }
+
+
+    main {
+      flex: 1 1 auto;
+      justify-content: space-between;
+      position: relative;
+      height: 100%;
+
+    }
+
+    main::before {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 1px;
+      background-color: rgba(139, 198, 62, 0.37);
+      content: '';
+      left: 50%;
+    }
+
+    .in,
+    .out {
+      width: 45%;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+
+
+    .in__head {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .in__item {
+      margin-bottom: 10px;
+      position: relative;
+      width: 30%;
+      margin-right: 10px;
+      min-height: 40px;
+    }
+
+    .in__item span {
+      position: absolute;
+      font-weight: bold;
+      color: #2F3B6D;
+      top: 0;
+      left: 0;
+      padding-left: 25px;
+    }
+
+    .in__family {
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      align-items: start;
+    }
+
+    .in__family div,
+    .in__mail div {
+      color: #2F3B6D;
+      font-weight: bold;
+      margin-bottom: 5px;
+
+    }
+
+    .in__family textarea {
+      margin-bottom: 10px;
+    }
+
+    .in__mail {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .in__mail label {
+      margin-bottom: 10px;
+      position: relative;
+      color: #2F3B6D;
+    }
+
+    .in__manual {
+      margin-bottom: 20px;
+      margin-top: 10px;
+      position: relative;
+      visibility: hidden;
+    }
+
+    .in__manual.active {
+      visibility: visible;
+    }
+
+    input[type="radio"] {
+      margin: 0;
+      margin-bottom: 10px;
+    }
+
+    .in__mail label:last-child:after {
+      position: absolute;
+      content: '(заповнювати без "@")';
+      top: 15px;
+      left: 0;
+      color: rgba(97, 97, 97, 0.945);
+      font-weight: normal;
+    }
+
+    .in__mail label:last-child {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .in__mail label:last-child span {
+      position: absolute;
+      top: 0;
+      left: 20px;
+    }
+
+    .in__btns {
+
+      min-height: calc(100% - 135px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+
+    }
+
+    .in__btns div {
+      display: flex;
+      flex-direction: column;
+    }
+
+
+
+    label.d-active span {
+      color: rgba(70, 70, 70, 0.767);
+    }
+
+    textarea {
+      height: 100%;
+      width: 100%;
+      outline: none;
+      padding: 10px;
+      resize: none;
+      line-height: 20px;
+    }
+
+    .prefix,
+    .sfix {
+      visibility: hidden;
+    }
+
+    input.active+input {
+      visibility: visible;
+
+    }
+
+    .out__family {
+      padding: 10px;
+      height: 50%;
+      display: flex;
+      align-items: start;
+
+    }
+
+    .out__family:last-child {
+      flex-direction: column;
+
+    }
+
+    .out__mail {
+      border: 1px solid #000;
+      overflow-y: scroll;
+      height: 100%;
+      list-style: none;
+      padding: 5px;
+      margin: 0;
+
+    }
+
+    .out__mail-item {
+      color: #2F3B6D;
+      padding: 3px;
+    }
+
+
+    .out__copy {
+      width: 100%;
+      outline: none;
+      margin-top: 1px;
+      resize: none;
+      margin-bottom: 10px;
+    }
+
+    button {
+      color: #2F3B6D;
+      outline: none;
+      border: none;
+      padding: 10px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 16px;
+      cursor: pointer;
+      transition: all .3s linear;
+      background-color: rgba(139, 198, 62, 0.37);
+      box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+
+
+    }
+
+    .translit:first-child {
+      margin-bottom: 30px;
+    }
+
+    .translit:first-child::after {
+      content: 'повна';
+    }
+
+    .translit::after {
+      position: absolute;
+      font-size: 10px;
+      left: 0;
+      width: 100%;
+      bottom: -18px;
+      color: rgba(99, 99, 99, 0.781);
+    }
+
+    .translit {
+      position: relative;
+
+    }
+
+    .translit:last-child:after {
+      content: 'без по-батькові';
+
+    }
+
+    .clearText,
+    .copy-text {
+      border-radius: 5px;
+      font-size: 12px;
+      line-height: 12px;
+      padding: 5px;
+      box-shadow: none;
+      background-color: #2f3b6d8f;
+      color: #fff;
+      font-weight: normal;
+    }
+
+    .clearText:hover,
+    .copy-text:hover {
+      background-color: #2F3B6D;
+    }
+
+    button:hover {
+      background-color: rgba(139, 198, 62, 0.37);
+      background-color: #8CC63E;
+    }
+
+    .dublicate {
+      background-color: rgba(255, 0, 0, 0.1);
+      position: relative;
+      font-weight: bold;
+    }
+
+    .dublicate::after {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      content: 'дублікат';
+      font-size: 8px;
+    }
+
+    footer {
+      height: 50px;
+      background-color: #8CC63E;
+      color: #fff;
+      padding: 10px;
+      font-weight: 300;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="header__logo">
+      <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="50mm" height="25mm" version="1.1"
+        style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+        viewBox="0 0 5000 2500" xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns:xodm="http://www.corel.com/coreldraw/odm/2003">
+        <path fill='#8CC63E'
+          d="M598.56 1827.75l464.63 -643.12c77.34,-108.59 156.53,-212.79 233.54,-321.12l174.95 -240.98c10.53,-13.67 47.29,-73.86 63.35,-77.48l438.22 1.48c-29.54,-7.71 -1544.24,-1.86 -1700.43,-1.86 -70.38,0 -174.33,-6.12 -240.58,1.01l-1.04 1280.14 567.36 1.93z" />
+        <path fill="#2F3B6D"
+          d="M1573.49 900.67c0.52,-0.6 2.17,-1.02 2.56,-2.68 0.39,-1.69 1.72,-1.81 2.63,-2.68l0.3 460.82 -321.03 -0.33 315.54 -455.13zm285.3 -111.04c137.13,-5.96 253.82,30.8 252.03,173.63 -0.9,71.13 -36.67,114.19 -77.79,139.35 -52.51,32.13 -106.12,32.87 -175.97,29.31l1.73 -342.29zm-1260.23 1038.12l319.75 -0.11c25.58,-40.83 152.16,-207.35 165.39,-234.16l495.21 -0.11 0.1 233.67 276.72 0.64 1.3 -447.52c92.72,-14.43 197.46,19.7 353.43,-85.72 76.6,-51.78 151.07,-146.86 169.34,-274.96 39.52,-277.14 -150.77,-459.48 -406.55,-472.95l-438.22 -1.48c-16.06,3.62 -52.82,63.81 -63.35,77.48l-174.95 240.98c-77.01,108.33 -156.2,212.53 -233.54,321.12l-464.63 643.12z" />
+        <path fill='#8CC63E'
+          d="M2176.15 1827.3l551.43 0.11 0.61 -757.23c-16.05,6.87 -289.74,397.33 -345.19,468.46l-138.68 191.25c-14.96,20.49 -61.6,78.88 -68.17,97.41z" />
+        <path fill='#010101'
+          d="M3295.99 1769.98c4.6,14.89 9.53,24.32 16.42,40.47 10.97,25.75 5.62,27.73 37.58,21.81 0.25,-55.22 -5.69,-143.19 4.91,-191.93 22.86,-8.5 30,-6.84 60.11,-6.72l0 -31.76 -222.93 0.05 -0.05 31.64c24.67,0.06 50.12,-5.99 62.49,10.51 36.04,40.81 -13.31,198.81 -142.22,151.58 -78.87,-28.9 -91.09,-139.4 -89.24,-239.53 3.76,-203.72 139.96,-252.55 245.1,-145.85 37.81,38.37 34.38,81.89 55,110.08l22.16 -0.47c7.35,-27.11 -1.98,-150.7 -2.07,-189.57 -28.93,0.01 -24.36,-4.91 -38.47,11.56l-22.48 25.58c-141.68,-106.87 -374.29,-6.71 -367.53,226.91 5.89,203.98 226.05,313.68 366.37,187.51l14.85 -11.87z" />
+        <path fill='#010101'
+          d="M4773.88 1545.88c118.9,-38.52 117.98,223.36 39.34,247.83 -118.68,36.94 -133.06,-217.46 -39.34,-247.83zm-193.32 -28.08l0.04 20.9c23.03,0.37 36.6,-1.74 49.89,16.02 7.96,20.05 8.7,340.01 0.89,367.65 -12.67,9.88 -26.73,11.28 -48.1,11.38 0.21,36.08 -9.46,29.74 83.36,29.74l105.19 -0.1 0.01 -29.69c-69.87,6.02 -58.85,-6.26 -56.11,-142.74 12.31,5.88 75.98,78.45 163.2,25.2 151.14,-92.27 63.09,-368.71 -106.09,-306.78 -21.32,7.81 -52.09,35.71 -60.53,48.8l-0.7 -55.01 -102.84 5.13c-20.39,1.42 -20.85,-2.3 -28.21,9.5z" />
+        <path fill='#010101'
+          d="M4148.3 1532.14c5.4,3.39 2.52,2.23 12.28,4.5 37.01,8.61 26.66,-3.32 37.89,16.05 21.94,40.4 -21.45,189.69 29.72,250.65 19.97,23.78 67.86,37.79 109.89,27.06 47.16,-12.03 61.08,-37.38 84.46,-60.74l0.28 60.87 135.04 -7.25c-0.37,-37.41 -4.2,-22.22 -33.94,-28.42 -14.44,-3.01 -19.86,-8.34 -23.03,-20.19 -3.85,-14.36 -1.57,-70.87 -1.57,-89.54 0,-60.89 0,-121.78 -0.05,-182.67 -27.03,0.63 -56.35,3.34 -82.16,4.54 -73.49,3.4 -58.47,-2.38 -58.39,30.91 34.8,0.02 37.09,-2.63 58.54,12.53 5.13,30.11 4.72,132.36 -1.08,162.33 -8.31,42.89 -34.17,79.7 -87.29,70.77 -52.69,-8.86 -44.74,-67.62 -44.72,-117.53 0.02,-54.52 -0.03,-109.03 -0.03,-163.55l-114.14 5.84c-27.14,3.11 -20.84,-3.28 -21.7,23.84z" />
+        <path fill='#010101'
+          d="M3930.86 1535.72c128.18,-47.93 130.25,233.98 47.6,264.39 -67.89,24.98 -95.46,-49.4 -99.72,-105.31 -4.13,-54.16 -3.48,-138.29 52.12,-159.08zm-6.55 -32.45c-216.91,44.58 -156.29,373.25 66.5,327.85 81.85,-16.68 144.08,-98.19 123.23,-201.45 -16.21,-80.22 -90.36,-146.83 -189.73,-126.4z" />
+        <path fill='#010101'
+          d="M3447.46 1517.8l0.02 21.03c25.5,-1.51 35.91,-1.65 54.82,5.39 9.25,24.95 13.74,222.45 -2.62,240.62 -14.69,14.57 -21.95,6.48 -45.53,11.8l-0.15 25.31 197.31 1.72 -0.08 -27.58c-26.24,-4.66 -38.32,-0.53 -61.68,-8.22 -13.65,-92.43 -4.27,-234.94 81.91,-251.45 -16.33,37.75 -12.54,80.24 37.92,74.92 40.54,-4.27 53.18,-57.09 27.52,-86.56 -31.19,-35.79 -95.78,-30.11 -133.27,24.85 -11.43,16.76 -14.32,31.38 -25.15,43.28l0.05 -90.52c-23.77,0.89 -47.21,3.13 -71.04,4.32 -10.24,0.52 -21.17,0.75 -31.64,1.5 -20.26,1.45 -20.88,-2.28 -28.39,9.59z" />
+      </svg>
+    </div>
+    <div class="header__content">
+      <div class="header__item item-pref">
+        <div class="item__name">
+          Префікс
+        </div>
+        <div class="item__visual" data-head="префікс">
+
+        </div>
+      </div>
+      <div class="header__item item">
+        <div class="item__name">
+          Прізвище, Ім'я
+        </div>
+        <div class="item__visual" data-head="iprizvyshche">
+
+        </div>
+      </div>
+      <div class="header__item item-suf">
+        <div class="item__name">
+          Суфікс
+        </div>
+        <div class="item__visual" data-head="_суфікс">
+
+        </div>
+      </div>
+      <div class="header__item item">
+        <div class="item__name">
+          Почта
+        </div>
+        <div class="item__visual" data-head="@почта.ком">
+
+        </div>
+
+      </div>
+      <div class="header__item item item_result">
+        <div class="item__name">
+          Результат
+        </div>
+        <div class="item__visual " data-head="результат">
+
+        </div>
+
+      </div>
+    </div>
+
+  </header>
+  <main>
+    <div class="in">
+
+      <div class="in__family">
+        <div>
+          Прізвище Ім'я
+        </div>
+        <textarea rows="10" cols="45" name="text" class="name-area">
+
+        </textarea>
+        <button class="clearText">Очистити поле вводу</button>
+      </div>
+      <div class="in__head">
+        <div class="in__item">
+
+          <label>
+            <input type="checkbox" name='pref' value="pref" class="prefToggle">
+
+            <input type="text" class="prefix in__input">
+            <span>
+              Префікс
+            </span>
+          </label>
+        </div>
+        <div class="in__item">
+          <label>
+            <input type="checkbox" name='sf' value="sfix" class="sfixToggle">
+            <input type="text" class="sfix in__input">
+            <span>
+              Суфікс
+            </span>
+          </label>
+
+
+        </div>
+        <div class="in__mail">
+          <div>Пошта</div>
+          <label>
+            <input type="radio" id="ukr" name="mail" value="mail" data-mail="@agroprosperis.com">
+            agroprosperis.com
+          </label>
+          <label>
+            <input type="radio" id="gmail" name="mail" value="mail" data-mail="@gmail.com">
+            gmail.com
+          </label>
+
+          <label>
+            <input type="radio" name="mail" id="manual" value="mail" data-mail="@" class="manualToogle">
+
+            <input type="text" class="in__manual">
+            <span> Ваш варіант</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="in__btns">
+
+      <button class="generate">Згенерувати пошту</button>
+
+      <button class="resetForm">Очистити</button>
+      <div>
+        <button class="translit">Транслітерація</button>
+        <button class="translit translit-wf">Транслітерація</button>
+      </div>
+
+
+    </div>
+
+    <div class="out">
+      <div class="out__family">
+        <ul class="out__copy out__mail">
+
+        </ul>
+      </div>
+      <div class="out__family">
+        <textarea readonly="readonly" class="out__copy out__fio"></textarea>
+        <button class="copy-text">Копіювати</button>
+      </div>
+
+    </div>
+  </main>
+  <footer>
+    <div> powered by Usenko O.V.</div>
+    <div>telegram - @async2</div>
+  </footer>
+</body>
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    class Creator {
+      constructor(familyName) {
+        this.converter = {
+          'а': 'a', 'б': 'b', 'в': 'v', 'г': 'h', 'ґ': 'g',
+          'д': 'd', 'е': 'e', 'є': 'ie', 'ж': 'zh', 'з': 'z',
+          'и': 'y', 'і': 'i', 'ї': 'i', 'й': 'i',
+          'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n',
+          'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't',
+          'у': 'u', 'ф': 'f', 'х': 'kh', 'ц': 'ts', 'ч': 'ch',
+          'ш': 'sh', 'щ': 'shch', 'ь': '', ' ': ' ',
+          'ю': 'іu', 'я': 'ia', "'": '', 'зг': 'zgh',
+          'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'H', 'Ґ': 'ґ',
+          'Д': 'D', 'Е': 'E', 'Є': 'Ye', 'Ж': 'Zh', 'З': 'Z',
+          'И': 'Y', 'І': 'I', 'Ї': 'Yi', 'Й': 'Y',
+          'К': 'K', 'Л': 'L', 'М': 'M', 'Н': 'N',
+          'О': 'O', 'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T',
+          'У': 'U', 'Ф': 'F', 'Х': 'Kh', 'Ц': 'Ts', 'Ч': 'Ch',
+          'Ш': 'Sh', 'Щ': '	Shch',
+          'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya', 'Зг': 'Zgh'
+        },
+          this.familyName = familyName,
+          this.familyNames = this.familyName.split('\n');
+        this.familyPartTranslated = [];
+        this.withOutFather = [];
+        this.loginPart = [];
+        this.email = [];
+      }
+      generateWord() {
+        this.familyNames.forEach(items => {
+          let item = items.split('');
+          this.translit(item);
+        });
+        this.familyPartTranslated.forEach(items => {
+          let item = items.split('');
+          this.noFather(item);
+        });
+        this.loginPart.forEach(item => {
+          this.createLogin(item);
+
+        });
+
+      }
+      translit(family) {
+        family.map(function (letter, index, arr) {
+          if (arr[index] === 'З' && arr[index + 1] === 'г') {
+            delete arr[index + 1];
+            arr[index] = 'Зг';
+          }
+          if (arr[index] === 'з' && arr[index + 1] === 'г') { // ищем где "г" идет после "з", и меняем масив для правильной транслитерации
+
+            delete arr[index + 1];
+            arr[index] = 'зг';
+          }
+        });
+        const arr = [];
+        for (let i = 0; i < family.length; i++) {
+          arr.push(this.converter[family[i]]);
+        }
+        this.loginPart.push(arr)
+        this.familyPartTranslated.push(arr.join(''));
+      }
+      noFather(word) {
+        let tempArr = [];
+        let a = 0;
+        word.filter(function (letter, index, arr) {
+          if (a !== 2) {
+            if (letter === ' ') {
+              tempArr.push(letter);
+              return a += 1;
+            }
+            tempArr.push(letter);
+          }
+        })
+        if (tempArr[tempArr.length - 1] === ' ') {
+          tempArr.pop();
+          return this.withOutFather.push(tempArr.join(''));
+        }
+        return this.withOutFather.push(tempArr.join(''));
+
+      }
+      reset() {
+        this.familyNames = '';
+        this.familyPartTranslated = [];
+        this.familyName = '';
+        this.loginPart = [];
+      }
+      createLogin(word) {
+
+        const loginLetters = [];
+
+        let ind = word.indexOf(' ');  // Ищем пробел
+        word.filter(function (lettr, index, arr) {
+
+          if (index === ind) {
+
+            return loginLetters.push(arr[index + 1]);
+            // Ищем первую букву имени и переносим ее в логин
+          }
+        });
+        if (ind > -1) {
+          word.splice(ind); // Получаем фамилию в ввиде масива
+        };
+        word.forEach(lett => {
+          loginLetters.push(lett);
+        });
+        this.email.push(loginLetters.join('').toLowerCase());// добавляем фамилию в логин
+      }
+    };
+
+    //Check
+    const prefToggle = document.querySelector('.prefToggle');
+    const sfixToggle = document.querySelector('.sfixToggle');
+    const manualToogle = document.querySelector('.manualToogle');
+    const check = document.querySelectorAll('input[type="checkbox"]');
+    //Head fields
+    const headPref = document.querySelector('[data-head="префікс"]');
+    const headName = document.querySelector(`[data-head="iprizvyshche"]`);
+    const headSfix = document.querySelector('[data-head="_суфікс"]');
+    const headMail = document.querySelector('[data-head="@почта.ком"]');
+    const headResult = document.querySelector('[data-head="результат"]');
+    const headFields = document.querySelectorAll('.item__visual');
+    //Radio Male
+    const radio = document.querySelectorAll('input[name="mail"]');
+    //Textarea
+    const nameArea = document.querySelector('.name-area');
+    //Buttons
+    const clearText = document.querySelector('.clearText');
+    const translit = document.querySelectorAll('.translit');
+    const generate = document.querySelector('.generate');
+    const resetForm = document.querySelector('.resetForm');
+    const copyText = document.querySelector('.copy-text')
+    //Inputs
+    const prefInput = document.querySelector('.prefix');
+    const sufixInput = document.querySelector('.sfix')
+    const manualMail = document.querySelector('.in__manual')
+    const outFio = document.querySelector('.out__fio');
+    const outMail = document.querySelector('.out__mail');
+    let emailPart;
+
+
+    const result = {
+      fam: '',
+      prefix: '',
+      sufix: '',
+      email: ''
+    };
+
+    nameArea.value = ''
+
+    nameArea.addEventListener('input', () => {
+      headName.classList.add('active');
+      headName.textContent = headName.dataset.head;
+      showResultInHead();
+      if (nameArea.value === '' || nameArea.value === ' ') {
+        headName.classList.remove('active');
+        headName.textContent = '';
+        result.fam = '';
+        showResultInHead();
+      } else {
+        result.fam = headName.dataset.head;
+      }
+
+    });
+    nameArea.addEventListener('focus', () => {
+      headName.classList.add('active');
+      headName.textContent = headName.dataset.head;
+    });
+    //Chech Heandler
+
+    check.forEach(item => {
+      item.nextElementSibling.addEventListener('keypress', function (e) {
+        if (e.key.match(/[^a-z 0-9 @ \.]/ig)) {
+          e.preventDefault();
+        }
+      });
+
+      item.addEventListener('click', chekToHead);
+    });
+    // Radio Heandler
+    radio.forEach(item => {
+      item.addEventListener('click', function () {
+        if (this.classList.contains('manualToogle')) { //активируем поле для ввода текста
+          this.nextElementSibling.classList.add('active');
+        } else {
+          manualToogle.nextElementSibling.classList.remove('active');
+          manualToogle.nextElementSibling.value = ''; //деактивируем поле для ввода текста
+        };
+        if (this.dataset.mail === '@agroprosperis.com') { //очищаем и запрещаем ввод префикса
+          disabledCheckBox()
+        }
+        else {
+          check.forEach(item => {
+            item.parentElement.classList.remove('d-active');
+            item.addEventListener('click', chekToHead);
+            item.removeAttribute('disabled', 'disabled');
+          });
+        }
+        headContent(item, 'add');
+      });
+    });
+    //Head Fields
+    document.addEventListener('change', () => {
+      emailPart = new Creator(nameArea.value);
+      emailPart.generateWord();
+      showResultInHead();
+    })
+    //Translit
+    translit.forEach(item => {
+      if (!item.classList.contains('translit-wf')) {
+        item.addEventListener('click', () => {
+          resetArea();
+          emailPart.familyPartTranslated.forEach(login => {
+
+            if (login !== '')
+              outFio.textContent += `${login}\n`;
+          });
+        });
+      } else {
+        item.addEventListener('click', () => {
+          resetArea();
+          emailPart.withOutFather.forEach(login => {
+            if (login !== '')
+              outFio.textContent += `${login}\n`;
+          });
+        });
+      }
+
+    })
+
+    //generate
+    generate.addEventListener('click', () => {
+      outMail.innerHTML = '';
+      if (prefToggle.checked && prefInput.value !== null) {
+        result.prefix = prefInput.value;
+      }
+      if (sfixToggle.checked && sufixInput.value !== '') {
+        result.sufix = '_' + sufixInput.value;
+      }
+      radio.forEach(item => {
+        if (item.checked && item.nextElementSibling === null) {
+          result.email = item.dataset.mail
+        }
+        else if (item.checked && item.nextElementSibling.classList.contains('in__manual') && item.nextElementSibling.value !== '') {
+          result.email = '@' + item.nextElementSibling.value;
+        }
+      });
+      emailPart.email.forEach((item, index) => {
+        const i = emailPart.email.indexOf(item);
+        if (item !== '') {
+          if (i === index) {
+            outMail.innerHTML += `<li class="out__mail-item">${result.prefix}${item}${result.sufix}${result.email} </li>`
+          }
+          else {
+            outMail.innerHTML += `<li class="out__mail-item dublicate">${result.prefix}${item}${result.sufix}${result.email} </li>`
+          }
+        }
+      })
+
+    });
+    //Clear
+    resetForm.addEventListener('click', clearForm)
+    //Clear textarea
+    clearText.addEventListener('click', () => {
+      nameArea.value = '';
+      headName.classList.remove('active');
+      headName.textContent = '';
+      result.fam = '';
+      showResultInHead();
+    });
+    //Copy text
+    copyText.addEventListener('click', () => {
+      copyArea(outFio)
+
+    })
+
+
+    //Functions 
+    function showResultInHead() {
+      headResult.textContent = `${result.prefix}${result.fam}${result.sufix}${result.email}`;
+    }
+    function chekToHead() {
+      if (this.checked && this.value === 'pref' || this.checked && this.value === 'sfix') {
+        headContent(this, 'add');
+      } else {
+        this.nextElementSibling.value = '';
+        headContent(this, 'remove');
+      }
+    }
+    function headContent(el, classAction) {
+
+      switch (classAction) {
+        case 'add':
+          switch (el.value) {
+            case "pref":
+              headPref.classList.add('active');
+              prefInput.addEventListener('input', function () {
+                headPref.textContent = prefInput.value;
+                result.prefix = prefInput.value;
+                showResultInHead();
+
+              })
+
+              break;
+            case "sfix":
+              headSfix.classList.add('active');
+              sufixInput.addEventListener('input', function () {
+                headSfix.textContent = '_' + sufixInput.value;
+                result.sufix =  '_' + sufixInput.value;
+                showResultInHead();
+              })
+
+              break;
+            case "mail":
+              headMail.classList.add('active');
+              headMail.textContent = el.dataset.mail;
+              result.email = headMail.textContent;
+              if (el.nextElementSibling !== null && el.nextElementSibling.classList.contains('in__manual')) {
+                manualMail.addEventListener('input', function () {
+                  headMail.textContent = el.dataset.mail + el.nextElementSibling.value;
+                  result.email = headMail.textContent;
+                })
+
+              }
+              break;
+          }
+          el.classList.add('active');
+          break;
+        case 'remove':
+          switch (el.value) {
+            case "pref":
+              headPref.textContent = '';
+              headPref.classList.remove('active');
+              result.prefix = '';
+              break;
+            case "sfix":
+              headSfix.textContent = '';
+              headSfix.classList.remove('active');
+              result.sufix = '';
+              break;
+            case "mail":
+              headMail.classList.remove('active');
+              headMail.textContent = '';
+              result.email = '';
+
+              break;
+          }
+          el.classList.remove('active');
+          break;
+      }
+
+
+    }
+    
+    function disabledCheckBox() {
+      check.forEach(item => {
+        item.checked = false;
+        result.prf = '';
+        result.sf = '';
+        item.nextElementSibling.value = '';
+        item.parentElement.classList.add('d-active');
+        item.removeEventListener('click', chekToHead)
+        headContent(item, 'remove');
+        item.setAttribute('disabled', 'disabled')
+      })
+    }
+    function resetArea() {
+      outFio.textContent = '';
+      result.fam = '';
+      showResultInHead();
+
+    }
+    function clearForm() {
+      check.forEach(item => {
+        item.checked = false
+        item.classList.remove('active');
+        item.nextElementSibling.value = '';
+        if (item.classList.contains('prefToggle')) {
+          headContent(item, 'remove');
+        } else {
+          headContent(item, 'remove');
+        }
+
+      });
+      radio.forEach(item => {
+        item.checked = false
+        if (item.classList.contains('manualToogle')) {
+          manualToogle.nextElementSibling.classList.remove('active');
+          manualToogle.nextElementSibling.value = '';
+        };
+        if (item.dataset.mail === '@agroprosperis.com') {
+          check.forEach(item => {
+            item.parentElement.classList.remove('d-active');
+            item.addEventListener('click', chekToHead);
+            item.removeAttribute('disabled', 'disabled');
+          });
+        }
+        headContent(item, 'remove');
+        showResultInHead();
+      })
+      outMail.innerHTML = '';
+      outFio.textContent = '';
+      headResult.textContent = '';
+
+    }
+    function copyArea(area) {
+      let range = document.createRange();
+      range.selectNodeContents(area);
+      area.select();
+      window.getSelection().addRange(range);
+      try {
+        document.execCommand('copy')
+      } catch (e) { }
+      window.getSelection().removeAllRanges();
+    }
+  });
+</script>
+
+</html>
