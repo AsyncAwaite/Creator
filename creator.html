@@ -277,13 +277,9 @@
       height: 50%;
       display: flex;
       align-items: start;
-
-    }
-
-    .out__family:last-child {
       flex-direction: column;
-
     }
+
 
     .out__mail {
       border: 1px solid #000;
@@ -354,7 +350,7 @@
     }
 
     .clearText,
-    .copy-text {
+    .copy {
       border-radius: 5px;
       font-size: 12px;
       line-height: 12px;
@@ -365,8 +361,7 @@
       font-weight: normal;
     }
 
-    .clearText:hover,
-    .copy-text:hover {
+    .copy:hover {
       background-color: #2F3B6D;
     }
 
@@ -399,6 +394,40 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+    }
+
+    .popup {
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(34, 60, 80, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .popup.active {
+      display: flex;
+    }
+
+    .popup .out__copy {
+      min-height: 20rem;
+    }
+
+    .popup .out {
+      position: relative;
+    }
+
+    .close {
+      position: absolute;
+      top: 0;
+      right: 0;
+      z-index: 1000;
+      background: red;
+      width: 36px;
+      height: 36px;
+      color: white;
+
     }
   </style>
 </head>
@@ -547,10 +576,14 @@
         <ul class="out__copy out__mail">
 
         </ul>
+        <button class="copy copy-mail">Копіювати пошту</button>
       </div>
       <div class="out__family">
         <textarea readonly="readonly" class="out__copy out__fio"></textarea>
-        <button class="copy-text">Копіювати</button>
+        <div>
+          <button class="copy copy-text">Копіювати</button>
+          <button class="copy copy-all">Скопіювати все</button>
+        </div>
       </div>
 
     </div>
@@ -559,6 +592,18 @@
     <div> powered by Usenko O.V.</div>
     <div>telegram - @async2</div>
   </footer>
+  <div class="popup">
+    <div class="out">
+      <div class="out__family">
+        <textarea class="out__copy"></textarea>
+        <button class="copy copy-text">Копіювати</button>
+      </div>
+      <button class="close">X</button>
+
+
+    </div>
+
+  </div>
 </body>
 <script>
   window.addEventListener('DOMContentLoaded', () => {
@@ -687,12 +732,20 @@
     const radio = document.querySelectorAll('input[name="mail"]');
     //Textarea
     const nameArea = document.querySelector('.name-area');
+    //Popup
+    const popup = document.querySelector('.popup');
+    const area = popup.querySelector('.out__copy');
+    const copyAllText = popup.querySelector('.copy-text');
     //Buttons
     const clearText = document.querySelector('.clearText');
     const translit = document.querySelectorAll('.translit');
     const generate = document.querySelector('.generate');
     const resetForm = document.querySelector('.resetForm');
-    const copyText = document.querySelector('.copy-text')
+    const copyText = document.querySelector('.copy-text');
+    const copyMail = document.querySelector('.copy-mail');
+    const copyAll = document.querySelector('.copy-all');
+    const close = document.querySelector('.close');
+
     //Inputs
     const prefInput = document.querySelector('.prefix');
     const sufixInput = document.querySelector('.sfix')
@@ -833,7 +886,28 @@
     });
     //Copy text
     copyText.addEventListener('click', () => {
-      copyArea(outFio)
+      copyArea(outFio);
+    });
+    copyMail.addEventListener('click', () => {
+      copyArea(outMail);
+    });
+
+    copyAll.addEventListener('click', () => {
+      popup.classList.add('active');
+      const emails = document.querySelectorAll('.out__mail-item');
+      area.textContent = '';
+      let fragment = '';
+      emails.forEach(email => {
+        fragment += `${email.textContent} \n`
+      })
+      area.textContent = fragment + outFio.textContent;
+      copyAllText.addEventListener('click', () => {
+        copyArea(area);
+      });
+    });
+    close.addEventListener('click', () => {
+      popup.classList.remove('active');
+
 
     })
 
@@ -869,7 +943,7 @@
               headSfix.classList.add('active');
               sufixInput.addEventListener('input', function () {
                 headSfix.textContent = '_' + sufixInput.value;
-                result.sufix =  '_' + sufixInput.value;
+                result.sufix = '_' + sufixInput.value;
                 showResultInHead();
               })
 
@@ -914,7 +988,7 @@
 
 
     }
-    
+
     function disabledCheckBox() {
       check.forEach(item => {
         item.checked = false;
@@ -968,13 +1042,114 @@
     }
     function copyArea(area) {
       let range = document.createRange();
+      console.log(1);
       range.selectNodeContents(area);
-      area.select();
+      // range.selectNode(area);
       window.getSelection().addRange(range);
+
       try {
         document.execCommand('copy')
       } catch (e) { }
       window.getSelection().removeAllRanges();
+    }
+    class Сomparison {
+      constructor({ parent }) {
+        this.parent = document.querySelectorAll(parent); // Родительский єлемент для фотографий.
+      }
+      renderEl() {
+        this.parent.forEach((item) => {
+          const images = item.querySelectorAll("img");
+          const fragment = document.createDocumentFragment();
+          const beforeEl = document.createElement("div");
+          const afterEl = document.createElement("div");
+          const resizerEl = document.createElement("div");
+          beforeEl.classList.add("img-comparison__before");
+          beforeEl.appendChild(images[0]);
+          afterEl.classList.add("img-comparison__after");
+          afterEl.appendChild(images[1]);
+          resizerEl.classList.add("img-comparison__resizer");
+          fragment.appendChild(beforeEl);
+          fragment.appendChild(afterEl);
+          fragment.appendChild(resizerEl);
+          item.appendChild(fragment);
+        });
+      }
+
+      change() {
+        this.parent.forEach((item) => {
+          const before = item.querySelector(".img-comparison__before");
+          const beforeImage = item.firstElementChild.querySelector('img');
+          const resizer = item.querySelector(".img-comparison__resizer");
+          let active = false;
+          document.addEventListener("DOMContentLoaded", function () {
+            let width = item.offsetWidth;
+            beforeImage.style.width = width + "px";
+          });
+          resizer.addEventListener("mousedown", function () {
+            active = true;
+            resizer.classList.add("resize");
+          });
+
+          document.body.addEventListener("mouseup", function () {
+            active = false;
+            resizer.classList.remove("resize");
+          });
+
+          document.body.addEventListener("mouseleave", function () {
+            active = false;
+            resizer.classList.remove("resize");
+          });
+          document.body.addEventListener("mousemove", function (e) {
+            if (!active) return;
+            let x = e.pageX;
+            x -= item.getBoundingClientRect().left;
+            resizeIt(x);
+            pauseEvent(e);
+          });
+          resizer.addEventListener("touchstart", function () {
+            active = true;
+            resizer.classList.add("resize");
+          });
+          document.body.addEventListener("touchend", function () {
+            active = false;
+            resizer.classList.remove("resize");
+          });
+
+          document.body.addEventListener("touchcancel", function () {
+            active = false;
+            resizer.classList.remove("resize");
+          });
+          document.body.addEventListener("touchmove", function (e) {
+            if (!active) return;
+            let x;
+
+            let i;
+            for (i = 0; i < e.changedTouches.length; i++) {
+              x = e.changedTouches[i].pageX;
+            }
+
+            x -= item.getBoundingClientRect().left;
+            resizeIt(x);
+            pauseEvent(e);
+          });
+          function resizeIt(x) {
+            let transform = Math.max(0, Math.min(x, item.offsetWidth));
+            before.style.width = transform + "px";
+            resizer.style.left = transform - 0 + "px";
+          }
+          function pauseEvent(e) {
+            if (e.stopPropagation) e.stopPropagation();
+            if (e.preventDefault) e.preventDefault();
+            e.cancelBubble = true;
+            e.returnValue = false;
+            return false;
+          }
+        });
+      }
+      init() {
+        this.renderEl();
+        this.change();
+      }
     }
   });
 </script>
